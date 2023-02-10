@@ -1,10 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using CJBCheatsMenu.Framework.Components;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.GameData.Crops;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -43,13 +43,13 @@ namespace CJBCheatsMenu.Framework.Cheats.PlayerAndTools
             // disable harvest with scythe
             if (!enabled)
             {
-                IDictionary<string, int> cropHarvestMethods = this.GetCropHarvestMethods();
                 foreach (GameLocation location in context.GetAllLocations())
                 {
                     foreach (Crop crop in this.GetCropsIn(location))
                     {
-                        if (crop.indexOfHarvest.Value != null && cropHarvestMethods.TryGetValue(crop.indexOfHarvest.Value, out int harvestMethod))
-                            crop.harvestMethod.Value = harvestMethod;
+                        CropData? data = crop.GetData();
+                        if (data != null)
+                            crop.harvestMethod.Value = (int)data.HarvestMethod;
                     }
                 }
             }
@@ -92,25 +92,6 @@ namespace CJBCheatsMenu.Framework.Cheats.PlayerAndTools
                 if (crop != null)
                     yield return crop;
             }
-        }
-
-        /// <summary>Get a crop ID => harvest method lookup.</summary>
-        private IDictionary<string, int> GetCropHarvestMethods()
-        {
-            IDictionary<string, int> lookup = new Dictionary<string, int>();
-
-            IDictionary<string, string> cropData = Game1.content.Load<Dictionary<string, string>>("Data\\Crops");
-            foreach (string entry in cropData.Values)
-            {
-                string[] fields = entry.Split('/');
-                string cropID = fields[3];
-                int harvestMethod = Convert.ToInt32(fields[5]);
-
-                if (!lookup.ContainsKey(cropID))
-                    lookup.Add(cropID, harvestMethod);
-            }
-
-            return lookup;
         }
     }
 }
