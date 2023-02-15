@@ -150,7 +150,7 @@ namespace CJBItemSpawner.Framework.ItemData
 
                 yield return this.TryCreate(itemType.Identifier, $"{baseId}/{id}", _ =>
                 {
-                    Item note = ItemRegistry.Create(itemType.Identifier + id);
+                    Item note = ItemRegistry.Create(itemType.Identifier + baseId);
                     note.Name = $"{note.Name} #{id}";
                     return note;
                 });
